@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Menu, X, PlusCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface Star {
   x: number
@@ -22,7 +23,7 @@ export default function WarpSpeed() {
   const [isWarping, setIsWarping] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const numStars = 900
-
+  const router = useRouter()
 
   
   useEffect(() => {
@@ -115,7 +116,9 @@ export default function WarpSpeed() {
         setIsSearching(false)
         setIsWarping(false)
         setWarpSpeed(0.2)
-      }, 5000)
+        // Redirect to question page with the search query
+        router.push(`/question?q=${encodeURIComponent(searchQuery.trim())}`)
+      }, 2000)
     }
   }
 
@@ -146,6 +149,11 @@ export default function WarpSpeed() {
             className="absolute top-12 left-0 bg-black/80 backdrop-blur-sm rounded-lg shadow-lg p-4 w-48"
           >
             <ul className="space-y-2">
+            <li>
+                <Link href="/signup" className="text-white hover:text-blue-400 transition-colors duration-300">
+                  Sign Up
+                </Link>
+              </li>
               <li>
                 <Link href="/login" className="text-white hover:text-blue-400 transition-colors duration-300">
                   Login
