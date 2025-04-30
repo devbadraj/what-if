@@ -161,7 +161,9 @@ export default function AboutPage() {
                 >
                   <Twitter size={24} />
                 </motion.a>
+                
               </div>
+              <h2 className="text-xl text-purple-300 font-semibold">Made with ❤️ by Dev Badraj</h2>
             </div>
           </div>
         </motion.div>
