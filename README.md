@@ -63,8 +63,8 @@
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/your-username/what-if-ai.git
-cd what-if-ai
+git clone https://github.com/devbadraj/what-if.git
+cd what-if
 npm install
 ```
 
