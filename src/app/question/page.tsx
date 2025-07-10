@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, Suspense } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, Share2, BookmarkPlus, Sparkles } from "lucide-react"
@@ -14,7 +14,7 @@ interface Star {
   py: number
 }
 
-export default function QuestionPage() {
+function QuestionContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const [warpSpeed, setWarpSpeed] = useState(0.2)
@@ -200,5 +200,29 @@ export default function QuestionPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="relative w-full min-h-screen overflow-hidden bg-black flex items-center justify-center">
+      <div className="text-white text-xl font-bungee-hairline flex items-center gap-2">
+        <span>Loading cosmic exploration...</span>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        >
+          <Sparkles className="text-purple-400" />
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+export default function QuestionPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <QuestionContent />
+    </Suspense>
   )
 }
