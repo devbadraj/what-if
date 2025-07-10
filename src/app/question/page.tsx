@@ -16,14 +16,12 @@ interface Star {
 
 function QuestionContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const starsRef = useRef<Star[]>([])
-  const [warpSpeed, setWarpSpeed] = useState(0.2)
   const [isLoading, setIsLoading] = useState(true)
   const [answer, setAnswer] = useState("")
   const searchParams = useSearchParams()
   const question = searchParams.get("q")
 
-  // Add star animation logic
+  // Static star background instead of animation
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -38,60 +36,21 @@ function QuestionContent() {
     setCanvasSize()
     window.addEventListener("resize", setCanvasSize)
 
-    // Initialize stars
-    const numStars = 900
-    starsRef.current = []
+    // Draw static stars
+    const numStars = 200
     for (let i = 0; i < numStars; i++) {
-      starsRef.current.push({
-        x: Math.random() * canvas.width - canvas.width / 2,
-        y: Math.random() * canvas.height - canvas.height / 2,
-        z: Math.random() * 1500,
-        px: 0,
-        py: 0,
-      })
+      const x = Math.random() * canvas.width
+      const y = Math.random() * canvas.height
+      const size = Math.random() * 2 + 0.5
+      
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.2})`
+      ctx.beginPath()
+      ctx.arc(x, y, size, 0, 2 * Math.PI)
+      ctx.fill()
     }
-
-    function animate() {
-      if (!ctx || !canvas) return
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      const centerX = canvas.width / 2
-      const centerY = canvas.height / 2
-
-      starsRef.current.forEach((star) => {
-        star.z -= warpSpeed
-        if (star.z <= 0) {
-          star.z = 1
-          star.x = Math.random() * canvas.width - centerX
-          star.y = Math.random() * canvas.height - centerY
-        }
-
-        const k = 400.0 / star.z
-        const x = star.x * k + centerX
-        const y = star.y * k + centerY
-
-        if (star.px !== 0) {
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.5)"
-          ctx.lineWidth = (1 - star.z / 1500) * 2
-          ctx.beginPath()
-          ctx.moveTo(x, y)
-          ctx.lineTo(star.px, star.py)
-          ctx.stroke()
-        }
-
-        star.px = x
-        star.py = y
-      })
-
-      requestAnimationFrame(animate)
-    }
-
-    animate()
 
     return () => window.removeEventListener("resize", setCanvasSize)
-  }, [warpSpeed])
+  }, [])
 
   // Simulate AI response
   useEffect(() => {
