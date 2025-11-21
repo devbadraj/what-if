@@ -52,15 +52,42 @@ function QuestionContent() {
     return () => window.removeEventListener("resize", setCanvasSize)
   }, [])
 
-  // Simulate AI response
+  // Fetch AI response from API
   useEffect(() => {
     if (question) {
       setIsLoading(true)
-      // Replace this with actual API call to your AI backend
-      setTimeout(() => {
-        setAnswer("Your AI-generated response here...")
-        setIsLoading(false)
-      }, 2000)
+      setAnswer("")
+      
+      fetch('/api/answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      })
+        .then(async (res) => {
+          const contentType = res.headers.get('content-type')
+          if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text()
+            console.error('Non-JSON response:', text.substring(0, 200))
+            throw new Error('Server returned an error page. Please check the server logs and ensure your API route is working correctly.')
+          }
+          
+          const data = await res.json()
+          if (!res.ok) {
+            throw new Error(data.error || 'Failed to fetch answer')
+          }
+          return data
+        })
+        .then((data) => {
+          setAnswer(data.answer || 'Unable to generate an answer.')
+          setIsLoading(false)
+        })
+        .catch((error) => {
+          console.error('Error fetching answer:', error)
+          setAnswer(`❌ Error: ${error.message || 'Sorry, there was an error generating an answer. Please make sure your OpenAI API key is configured correctly in your .env.local file and restart your dev server.'}`)
+          setIsLoading(false)
+        })
     }
   }, [question])
 
@@ -131,7 +158,7 @@ function QuestionContent() {
               animate={{ opacity: 1, y: 0 }}
               className="prose prose-invert max-w-none"
             >
-              <div className="text-white/90 text-lg leading-relaxed space-y-6">
+              <div className="text-white/90 text-lg leading-relaxed space-y-6 whitespace-pre-wrap">
                 {answer}
               </div>
               
